@@ -1,0 +1,2 @@
+from storagebox.repository.deduplication import DeduplicationDynamoDbRepository
+from storagebox.repository.item_bank import ItemBankDynamoDbRepository
