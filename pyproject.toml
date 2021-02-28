@@ -1,6 +1,7 @@
 [tool.poetry]
 name = "storagebox"
-version = "1.0.5"
+version = "1.0.7"
+homepage = "https://github.com/peter-emil/StorageBox"
 description = "A reusable, idempotent, and exactly once deduplication API"
 authors = ["Peter Emil Halim <peter@peteremil.com>"]
 readme = "README.md"

@@ -3,11 +3,18 @@
 StorageBox is a python module that you can use to de-duplicate data
 among distributed components.
 
+You can think of it as a digital implementation of a physical box. You
+put stuff in there and what you put in is exactly what you take out.
+No missing and/or duplicated records due to distributed nodes doing concurrent
+reads/writes.
+
 For example, let's assume you run a movie store. You have
-voucher codes you'd like to distribute to the first 30 users who press
+voucher codes you'd like to hand out to the first 30 users who press
 a button. You are concerned that some users might try to get more
 than 1 voucher code by exploiting race conditions (maybe clicking the
-button from multiple machines at the same time).
+button from multiple machines at the same time). You're also concerned
+that multiple users might get the same voucher code if they're incredibly
+unlucky and time their requests at just the right moments.
 
 
 
@@ -35,6 +42,12 @@ voucher_code = deduplicator.fetch_item_for_deduplication_id(
 ```
 And that's it!
 
+- `item_repo`: This is your box, you put in voucher codes and you take them out later. It is responsible
+for adding items to the box. It also works with the `deduplication_repo` to make sure that one voucher code gets
+taken outside the box for every one unique user.
+- `deduplication_repo`: This is what makes sure that no user gets more than one voucher code.
+- `deduplicator`: This contains the connecting logic between `item_repo` and `deduplication_repo`
+
 As long as you use a suitable `deduplication_id`, all race conditions
 and data hazards will be taken care of for you. Examples of suitable 
 candidates for `deduplication_id` can be User ID, IP Address, 
@@ -53,7 +66,8 @@ the same `deduplication_id`, you will always get the same result.
 
 If you prefer to use something else other than DynamoDB, you can implement your own `ItemBankRepository`
 and/or `DeduplicationRepository` for any other backend. This implementation will have to implement
-the already established Abstract class. If you do that, contributions are welcome!
+the already established Abstract class. You'll also need to read the blogpost at the bottom of this
+ README to understand how the storagebox algoritm works. If you do that, contributions are welcome!
 
 
 ## Installation
@@ -86,8 +100,8 @@ referral_link = deduplicator.fetch_item_for_deduplication_id(
 )
 ```
 
-Are you organizing online classes for your 150 students, you're willing to host 3 classes (50 students)
-each but you'd like to be sure that no student attends more than 1 class?
+Are you organizing online classes for your 150 students, you're willing to host 3 classes (50 students each)
+ but you'd like to be sure that no student attends more than 1 class?
 ```
 # Before you host your classes
 class_1_codes = storagebox.ItemBankDynamoDbRepository(table_name="class_1_codes")
